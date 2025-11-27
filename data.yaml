@@ -1,0 +1,5 @@
+train: output/data/images/train
+val: output/data/images/val
+
+nc: 3
+names: ['rect', 'circle', 'ellipsis']
