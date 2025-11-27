@@ -5,7 +5,7 @@ from pathlib import Path
 # Paths
 base_dir = Path('output/data')
 images_dir = base_dir / 'png'
-labels_dir = base_dir / 'png' / 'labels'
+labels_dir = base_dir / 'labels'
 train_images_dir = base_dir / 'images' / 'train'
 val_images_dir = base_dir / 'images' / 'val'
 train_labels_dir = base_dir / 'labels' / 'train'
