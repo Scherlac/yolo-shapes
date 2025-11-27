@@ -1,0 +1,62 @@
+import json
+import os
+import pathlib
+import math
+
+output_dir = pathlib.Path(__file__).parent.parent / "output" / "data"
+
+# Load the data
+with open(output_dir / 'data.json', 'r') as f:
+    data = json.load(f)
+
+# Create labels directory
+labels_dir = output_dir / "labels"
+labels_dir.mkdir(parents=True, exist_ok=True)
+
+# Process each image
+for i, image in enumerate(data):
+    width = image['width']
+    height = image['height']
+    
+    # Label file path
+    label_file = labels_dir / f"image_{i:04d}.txt"
+    
+    # Write annotations
+    with open(label_file, 'w') as f:
+        for shape in image["shapes"]:
+            # Determine class
+            if shape["type"] == "rect":
+                cls = 0
+            elif shape["type"] == "circle":
+                cls = 1
+            elif shape["type"] == "ellipsis":
+                cls = 2
+            else:
+                continue
+            
+            x, y, w, h = shape["x"], shape["y"], shape["w"], shape["h"]
+            rot = shape.get("rot", 0)
+            
+            # Compute 4 corner points before rotation (centered at origin)
+            hw, hh = w / 2, h / 2
+            points = [(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]
+            
+            # Rotate and translate
+            cos_r = math.cos(rot)
+            sin_r = math.sin(rot)
+            rotated_points = []
+            for px, py in points:
+                # Rotate
+                rx = px * cos_r - py * sin_r
+                ry = px * sin_r + py * cos_r
+                # Translate
+                rx += x
+                ry += y
+                # Normalize
+                rotated_points.extend([rx / width, ry / height])
+            
+            # Write line: class x1 y1 x2 y2 x3 y3 x4 y4
+            line = f"{cls} {' '.join(f'{p:.6f}' for p in rotated_points)}\n"
+            f.write(line)
+
+print(f"OBB YOLO labels created in {labels_dir}")

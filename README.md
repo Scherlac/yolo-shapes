@@ -22,7 +22,7 @@
    pip install -r requirements.txt
    ```
 
-This will install all necessary packages, including Ultralytics YOLOv5/YOLOv8 for training, PyTorch for model handling, and libraries for data generation and image processing.
+This will install all necessary packages, including Ultralytics YOLOv11 for OBB training, PyTorch for model handling, and libraries for data generation and image processing.
 
 ## How to Run
 
@@ -33,18 +33,12 @@ python training_generator/generate_syn.py
 ```
 This will create images in `output/data/png/` and annotations in `output/data.json`.
 
-### 2. Convert Data Formats
-Convert the custom data format to COCO JSON:
+### 2. Convert Data to OBB YOLO Format
+Convert the custom data format directly to YOLO OBB format:
 ```bash
-python convert_to_coco.py
+python training_generator/convert_json_to_obb_yolo.py
 ```
-This creates `output/coco_annotations.json`.
-
-Then, convert COCO to YOLO format labels:
-```bash
-python convert_coco_to_yolo.py
-```
-This generates YOLO txt label files in `output/data/labels/`.
+This generates OBB label files in `output/data/labels/` with format `class x1 y1 x2 y2 x3 y3 x4 y4`.
 
 ### 3. Prepare Train/Val Split
 Split the data into training and validation sets:
@@ -58,9 +52,10 @@ Run the training script:
 ```bash
 python training/mmyolo_training.py
 ```
-This will train a YOLOv5 model on the shape dataset. Adjust epochs and batch size in the script as needed. Trained models are saved in `runs/detect/`.
+This will train a YOLO11 OBB model on the shape dataset. Adjust epochs and batch size in the script as needed. Trained models are saved in `runs/detect/`.
 
 ### Notes
 - Pre-generated data is already available in the repository.
-- For inference, load the trained model and run predictions on new images.
+- For inference, load the trained model and run predictions on new images. Use `result.obb.xywhr` for oriented bounding box outputs.
 - Monitor training progress in the console output and validation metrics.
+- OBB provides better accuracy for rotated shapes compared to axis-aligned bounding boxes.

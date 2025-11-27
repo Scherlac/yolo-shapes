@@ -4,4 +4,4 @@ cairosvg
 torch
 opencv-python
 matplotlib
-ultralytics
+ultralytics>=8.0.0
