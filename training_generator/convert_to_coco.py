@@ -1,8 +1,11 @@
 import json
 import os
+import pathlib
+
+output_dir = pathlib.Path(__file__).parent.parent / "output"/"data"
 
 # Load the data
-with open('output/data.json', 'r') as f:
+with open(output_dir / 'data.json', 'r') as f:
     data = json.load(f)
 
 # Categories
@@ -65,7 +68,7 @@ coco_data = {
 }
 
 # Save to file
-with open('output/coco_annotations.json', 'w') as f:
+with open(output_dir / 'coco_annotations.json', 'w') as f:
     json.dump(coco_data, f, indent=4)
 
-print("COCO annotations saved to output/coco_annotations.json")
+print(f"COCO annotations saved to {output_dir / 'coco_annotations.json'}")

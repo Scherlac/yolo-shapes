@@ -1,5 +1,5 @@
 # generate synthetic svg data with rectangles and circles for mmyolo training
-
+import pathlib
 import random
 import numpy as np
 import os
@@ -200,9 +200,13 @@ def generate_images(data, svg_output_dir='data/svg', png_output_dir='data/png'):
 if __name__ == '__main__':
     data = generate_data()
 
-    generate_images(data)
+    output_dir = pathlib.Path(__file__).parent.parent / "output"/"data"
+    svg_dir = output_dir / "svg"
+    png_dir = output_dir / "png"
 
-    with open('data.json', 'w') as f:
+    generate_images(data, str(svg_dir), str(png_dir))
+
+    with open(output_dir / 'data.json', 'w') as f:
         json.dump(data, f, indent=4)
 
 

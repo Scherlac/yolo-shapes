@@ -2,12 +2,14 @@ import json
 import os
 from pathlib import Path
 
+output_dir = Path(__file__).parent.parent / "output"/"data"
+
 # Load COCO data
-with open('output/coco_annotations.json', 'r') as f:
+with open(output_dir / 'coco_annotations.json', 'r') as f:
     coco = json.load(f)
 
 # Create labels directory
-labels_dir = Path('output/data/labels')
+labels_dir = output_dir / "labels"
 labels_dir.mkdir(parents=True, exist_ok=True)
 
 # Group annotations by image_id
@@ -40,18 +42,18 @@ for image in coco['images']:
                 h_norm = bbox[3] / height
                 f.write(f"{category_id} {x_center:.6f} {y_center:.6f} {w_norm:.6f} {h_norm:.6f}\n")
 
-print("YOLO labels created in output/data/labels/")
+print(f"YOLO labels created in {labels_dir}")
 
 # Create data.yaml
 data_yaml = f"""
-train: output/data/png
-val: output/data/png  # Using same for now, split if needed
+train: {output_dir / "png"}
+val: {output_dir / "png"}  # Using same for now, split if needed
 
 nc: 3
 names: ['rect', 'circle', 'ellipsis']
 """
 
-with open('data.yaml', 'w') as f:
+with open(output_dir / 'data.yaml', 'w') as f:
     f.write(data_yaml.strip())
 
 print("data.yaml created.")
