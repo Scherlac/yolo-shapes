@@ -1,5 +1,5 @@
 - Install Ultralytics YOLOv5/YOLOv8 (done).
 - Convert synthetic data in `output/data.json` to COCO format (done).
 - Create Ultralytics data.yaml config and convert to YOLO labels (done).
-- Replace the dummy model and training logic in `mmyolo_training.py` with Ultralytics training API.
+- Replace the dummy model and training logic in `mmyolo_training.py` with Ultralytics training API (done).
 - Test the training setup with a small dataset to ensure it runs without errors.

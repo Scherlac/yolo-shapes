@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
+from ultralytics import YOLO
 
 
 # Image data
@@ -52,38 +53,26 @@ def postprocess_output(output):
     return predicted_class, probabilities
 
 if __name__ == "__main__":
-    # Example usage
-    sample_image_path = IMAGE_DIR / "sample.png"
-    image = load_image(sample_image_path)
-    display_image(image, title="Sample Image")
+    # Load a pretrained YOLO model
+    model = YOLO('yolov5s.pt')  # You can use 'yolov8n.pt' for YOLOv8 nano
 
-    # Preprocess image
-    image_tensor = preprocess_image(image)
+    # Train the model
+    data_path = pathlib.Path(__file__).parent.parent / "data.yaml"
+    results = model.train(
+        data=str(data_path),
+        epochs=10,  # Adjust epochs as needed
+        imgsz=640,
+        batch=16,  # Adjust batch size based on your GPU memory
+        name='yolo_shapes_training'
+    )
 
-    # Dummy model for demonstration
-    class DummyModel(torch.nn.Module):
-        def __init__(self):
-            super(DummyModel, self).__init__()
-            self.fc = torch.nn.Linear(224*224*3, 10)
+    print("Training completed. Model saved in runs/train/yolo_shapes_training/")
 
-        def forward(self, x):
-            x = x.view(x.size(0), -1)
-            return self.fc(x)
-
-    model = DummyModel()
-
-    # Forward pass
-    output = model(image_tensor)
-
-    # Postprocess output
-    predicted_class, probabilities = postprocess_output(output)
-    print(f"Predicted class: {predicted_class.item()}")
-    print(f"Probabilities: {probabilities.detach().numpy()}")
-
-    # Save and load model
-    save_model(model, MODEL_PATH)
-    loaded_model = load_model(DummyModel, MODEL_PATH)
-    print("Model saved and loaded successfully.")
-    return model
+    # Optional: Load and test on a sample image
+    sample_image_path = IMAGE_DIR / "image_0000.png"  # Assuming images are named image_0000.png etc.
+    if sample_image_path.exists():
+        results = model(sample_image_path)
+        print("Inference results on sample image:")
+        print(results)
 
 
