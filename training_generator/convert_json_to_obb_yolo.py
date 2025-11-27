@@ -3,7 +3,8 @@ import os
 import pathlib
 import math
 
-output_dir = pathlib.Path(__file__).parent.parent / "output" / "data"
+current_dir = pathlib.Path(__file__).parent
+output_dir = current_dir.parent / "output" / "data"
 
 # Load the data
 with open(output_dir / 'data.json', 'r') as f:
@@ -60,3 +61,19 @@ for i, image in enumerate(data):
             f.write(line)
 
 print(f"OBB YOLO labels created in {labels_dir}")
+
+# Create data.yaml
+data_yaml = f"""
+train: output/data/images/train
+val: output/data/images/val
+
+nc: 3
+names: ['rect', 'circle', 'ellipsis']
+
+task: obb
+"""
+
+with open(current_dir.parent / 'data.yaml', 'w') as f:
+    f.write(data_yaml.strip())
+
+print("data.yaml created.")
