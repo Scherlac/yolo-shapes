@@ -163,6 +163,7 @@ cython_debug/
 
 output
 remove
-run
+runs
 data.json
 README.md
+yolov5su.pt
