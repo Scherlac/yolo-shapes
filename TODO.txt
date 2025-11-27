@@ -1,0 +1,5 @@
+- Install MMYOLO and its dependencies (e.g., via `pip install openmim && mim install mmyolo`).
+- Verify or convert the synthetic data in `output/data.json` to COCO format required by MMYOLO.
+- Obtain or create an MMYOLO config file (e.g., based on a YOLOv5 or YOLOv8 config) and update paths to point to the local data.
+- Replace the dummy model and training logic in `mmyolo_training.py` with MMYOLO's training API (e.g., using `mmyolo.apis.train` or the `tools/train.py` script).
+- Test the training setup with a small dataset to ensure it runs without errors.
