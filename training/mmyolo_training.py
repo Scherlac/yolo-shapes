@@ -56,12 +56,18 @@ if __name__ == "__main__":
     # Load a pretrained YOLO model
     model = YOLO('yolo11n-obb.pt')  # Use YOLO11 OBB model
 
+    # runs/obb/yolo_obb_shapes_training/weights/best.pt
+    model_path = pathlib.Path(__file__).parent.parent / "runs"/"obb"/"yolo_obb_shapes_training"/"weights"/"best.pt"
+    if model_path.exists():
+        model.load(model_path) 
+
+
     # Train the model
     data_path = pathlib.Path(__file__).parent.parent / "data.yaml"
     results = model.train(
         data=str(data_path),
         task='obb',
-        epochs=1,  # Reduced for testing
+        epochs=40,  # Reduced for testing
         imgsz=640,
         batch=4,  # Reduced batch size for CPU
         name='yolo_obb_shapes_training'

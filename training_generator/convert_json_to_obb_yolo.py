@@ -25,18 +25,27 @@ for i, image in enumerate(data):
     # Write annotations
     with open(label_file, 'w') as f:
         for shape in image["shapes"]:
+
+            x, y, w, h = shape["x"], shape["y"], shape["w"], shape["h"]
+            rot = shape.get("rot", 0)
+
             # Determine class
             if shape["type"] == "rect":
                 cls = 0
             elif shape["type"] == "circle":
                 cls = 1
+                rot = 0  # No rotation for circles
             elif shape["type"] == "ellipsis":
                 cls = 2
+                # is it more a circle than an ellipse?
+                if abs(1-(w/h)) < 0.1:
+                    rot = 0  # Treat as circle
+                    shape["type"] = "circle"
+                    cls = 1
+
             else:
                 continue
             
-            x, y, w, h = shape["x"], shape["y"], shape["w"], shape["h"]
-            rot = shape.get("rot", 0)
             
             # Compute 4 corner points before rotation (centered at origin)
             hw, hh = w / 2, h / 2
