@@ -5,6 +5,7 @@ import math
 
 current_dir = pathlib.Path(__file__).parent
 output_dir = current_dir.parent / "output" / "data"
+shape_types=['circle', 'square', 'rect', 'ellipsis']
 
 # Load the data
 with open(output_dir / 'data.json', 'r') as f:
@@ -21,28 +22,19 @@ for i, image in enumerate(data):
     
     # Label file path
     label_file = labels_dir / f"image_{i:04d}.txt"
+
     
     # Write annotations
     with open(label_file, 'w') as f:
+        shape : dict = None
         for shape in image["shapes"]:
 
             x, y, w, h = shape["x"], shape["y"], shape["w"], shape["h"]
             rot = shape.get("rot", 0)
 
-            # Determine class
-            if shape["type"] == "rect":
-                cls = 0
-            elif shape["type"] == "circle":
-                cls = 1
-                rot = 0  # No rotation for circles
-            elif shape["type"] == "ellipsis":
-                cls = 2
-                # is it more a circle than an ellipse?
-                if abs(1-(w/h)) < 0.1:
-                    rot = 0  # Treat as circle
-                    shape["type"] = "circle"
-                    cls = 1
-
+            # Determine class index based on shape type list
+            if shape['type'] in shape_types:
+                cls = shape_types.index(shape['type'])
             else:
                 continue
             
@@ -76,8 +68,8 @@ data_yaml = f"""
 train: output/data/images/train
 val: output/data/images/val
 
-nc: 3
-names: ['rect', 'circle', 'ellipsis']
+nc: 4
+names: {shape_types}
 
 task: obb
 """
