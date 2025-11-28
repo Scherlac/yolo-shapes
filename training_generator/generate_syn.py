@@ -74,7 +74,7 @@ def shape_check(shapes, shape, width, height, border=0.02):
 def generate_data(num_images=100, # number of images to generate
                   width=640, # image width
                   height=640, # image height
-                  shape_types=['circle', 'rect', 'ellipsis'], # types of shapes to generate
+                  shape_types=['circle', 'square', 'rect', 'ellipsis'], # types of shapes to generate
                   min_size=30, # min size of objects
                   max_size=130, # max size of objects
                   min_objects=10, # min number of objects
@@ -97,11 +97,12 @@ def generate_data(num_images=100, # number of images to generate
         for j in range(num_objects):
             shape_type = random.choice(shape_types)
 
-            if shape_type == 'circle':
+            if shape_type in ['circle', 'square']:
                 w = h = random.randint(min_size, max_size)
             else:
-                w = random.randint(min_size, max_size)
+                # avoid corner cases for ellipses and rectangles
                 h = random.randint(min_size, max_size)
+                w = int(h * random.uniform(1.4, 3))
 
             while True:
                 color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -113,7 +114,15 @@ def generate_data(num_images=100, # number of images to generate
             while True:
                 shape['x'] = random.randint(0, width)
                 shape['y'] = random.randint(0, height)
-                shape['rot'] = random.uniform(0, np.pi/2)
+                # SRC: https://docs.ultralytics.com/datasets/obb/#supported-obb-dataset-formats
+                # due to ultralytics treatment of pi/4 rotation  we should avoid rotations near pi/4
+                # see: l1 < l2 vs l1 > l2 on the image
+                threshold = 0.06
+                rot = random.uniform(
+                    -np.pi/4 + threshold,
+                    np.pi/4 - threshold
+                )
+                shape['rot'] = rot
 
                 if shape_check(shapes, shape, width, height):
                     break
@@ -159,20 +168,20 @@ def generate_images(data, svg_output_dir='data/svg', png_output_dir='data/png'):
                 transform=f'translate({shape["x"]}, {shape["y"]}) rotate({np.degrees(shape["rot"])})'
             )
 
-            if shape['type'] == 'circle':
-                group.append(drawsvg.Circle(
-                    cx=0, cy=0,
-                    r=shape['w']/2,
-                    fill=f'rgb{shape["color"]}'
-                    )
-                )
-            elif shape['type'] == 'rect':
+            # if shape['type'] == 'circle':
+            #     group.append(drawsvg.Circle(
+            #         cx=0, cy=0,
+            #         r=shape['w']/2,
+            #         fill=f'rgb{shape["color"]}'
+            #         )
+            #     )
+            if shape['type'] in ['rect', 'square']:
                 group.append(drawsvg.Rectangle(
                     x=-shape['w']/2, y=-shape['h']/2, 
                     width=shape['w'], height=shape['h'], 
                     fill=f'rgb{shape["color"]}'))
                 
-            elif shape['type'] == 'ellipsis':
+            elif shape['type'] in ['ellipse', 'circle']:
                 group.append(drawsvg.Ellipse(
                     cx=0, cy=0,
                     rx=shape['w']/2, ry=shape['h']/2,
