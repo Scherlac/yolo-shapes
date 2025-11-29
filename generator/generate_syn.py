@@ -226,7 +226,9 @@ def generate_images(data, svg_output_dir='data/svg', png_output_dir='data/png'):
 
 
 if __name__ == '__main__':
-    data = generate_data()
+    data = generate_data(
+        num_images=800,
+    )
 
     output_dir = pathlib.Path(__file__).parent.parent / "output"/"data"
     svg_dir = output_dir / "svg"

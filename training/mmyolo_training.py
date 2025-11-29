@@ -20,9 +20,9 @@ if __name__ == "__main__":
     results = model.train(
         data=str(data_path),
         task='obb',
-        epochs=40,  # Reduced for testing
+        epochs=180,  # Reduced for testing
         imgsz=640,
-        batch=4,  # Reduced batch size for CPU
+        batch=12,  # Reduced batch size for CPU
         name='yolo_obb_shapes_training'
     )
 
