@@ -50,7 +50,7 @@ train: {output_dir / "png"}
 val: {output_dir / "png"}  # Using same for now, split if needed
 
 nc: 3
-names: ['rect', 'circle', 'ellipsis']
+names: ['square', 'rect', 'circle', 'ellipse']
 """
 
 with open(output_dir / 'data.yaml', 'w') as f:

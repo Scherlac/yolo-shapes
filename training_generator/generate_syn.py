@@ -74,7 +74,7 @@ def shape_check(shapes, shape, width, height, border=0.02):
 def generate_data(num_images=100, # number of images to generate
                   width=640, # image width
                   height=640, # image height
-                  shape_types=['circle', 'square', 'rect', 'ellipsis'], # types of shapes to generate
+                  shape_types=['square', 'rect', 'circle', 'ellipse'], # types of shapes to generate
                   min_size=30, # min size of objects
                   max_size=130, # max size of objects
                   min_objects=10, # min number of objects
@@ -122,6 +122,9 @@ def generate_data(num_images=100, # number of images to generate
                     -np.pi/4 + threshold,
                     np.pi/4 - threshold
                 )
+                if shape_type == 'circle':
+                    rot = 0
+
                 shape['rot'] = rot
 
                 if shape_check(shapes, shape, width, height):

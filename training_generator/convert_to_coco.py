@@ -10,9 +10,10 @@ with open(output_dir / 'data.json', 'r') as f:
 
 # Categories
 categories = [
-    {"id": 0, "name": "rect"},
-    {"id": 1, "name": "circle"},
-    {"id": 2, "name": "ellipsis"}
+    {"id": 0, "name": "square"},
+    {"id": 1, "name": "rect"},
+    {"id": 2, "name": "circle"},
+    {"id": 3, "name": "ellipse"}
 ]
 
 # Initialize lists
@@ -37,7 +38,7 @@ for image_id, item in enumerate(data):
             category_id = 0
         elif shape["type"] == "circle":
             category_id = 1
-        elif shape["type"] == "ellipsis":
+        elif shape["type"] == "ellipse":
             category_id = 2
         else:
             continue  # Skip unknown types

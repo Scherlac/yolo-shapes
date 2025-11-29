@@ -5,7 +5,7 @@ import math
 
 current_dir = pathlib.Path(__file__).parent
 output_dir = current_dir.parent / "output" / "data"
-shape_types=['circle', 'square', 'rect', 'ellipsis']
+shape_types=['square', 'rect', 'circle', 'ellipse']
 
 # Load the data
 with open(output_dir / 'data.json', 'r') as f:
