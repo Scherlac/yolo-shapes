@@ -97,12 +97,18 @@ def generate_data(num_images=100, # number of images to generate
         for j in range(num_objects):
             shape_type = random.choice(shape_types)
 
+            area = random.randint(min_size, max_size) * random.randint(min_size, max_size)
+
+            if shape_type in ['circle', 'ellipse']:
+                area = area * np.pi / 4  # adjust area for ellipse/circle
+
             if shape_type in ['circle', 'square']:
-                w = h = random.randint(min_size, max_size)
+                w = h = int(np.sqrt(area))
             else:
                 # avoid corner cases for ellipses and rectangles
-                h = random.randint(min_size, max_size)
-                w = int(h * random.uniform(1.4, 3))
+                aspect_ratio = random.uniform(1.4, 3)
+                h = int(np.sqrt(area / aspect_ratio))
+                w = int(h * aspect_ratio)
 
             while True:
                 color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -118,12 +124,22 @@ def generate_data(num_images=100, # number of images to generate
                 # due to ultralytics treatment of pi/4 rotation  we should avoid rotations near pi/4
                 # see: l1 < l2 vs l1 > l2 on the image
                 threshold = 0.06
-                rot = random.uniform(
-                    -np.pi/4 + threshold,
-                    np.pi/4 - threshold
-                )
                 if shape_type == 'circle':
-                    rot = 0
+                    # circles have rotation symmetry, so set to 0
+                    rot = 0.0
+                elif shape_type == 'square':
+                    # squares have symmetry every pi/2, so limit to 0 to pi/4
+                    rot = random.uniform(0, np.pi/4 - threshold) 
+                    # although we provide corner coordinates, the library still might be affected by
+                    # the ordering of the corners due to its internal representation
+                    # we will see after training if this will improve results
+                else:
+                    # rectangles and ellipses have every pi rotation symmetry, 
+                    # so use full range -pi/4 to pi/4
+                    rot = random.uniform(
+                            -np.pi/4 + threshold,
+                            np.pi/4 - threshold
+                        )
 
                 shape['rot'] = rot
 
