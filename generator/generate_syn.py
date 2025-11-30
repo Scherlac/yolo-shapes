@@ -107,8 +107,13 @@ def generate_data(num_images=100, # number of images to generate
             else:
                 # avoid corner cases for ellipses and rectangles
                 aspect_ratio = random.uniform(1.4, 3)
-                h = int(np.sqrt(area / aspect_ratio))
-                w = int(h * aspect_ratio)
+                #50% horizontal, 50% vertical
+                if random.random() < 0.5:
+                    h = int(np.sqrt(area / aspect_ratio))
+                    w = int(h * aspect_ratio)
+                else:
+                    w = int(np.sqrt(area / aspect_ratio))
+                    h = int(w * aspect_ratio)
 
             while True:
                 color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -129,7 +134,7 @@ def generate_data(num_images=100, # number of images to generate
                     rot = 0.0
                 elif shape_type == 'square':
                     # squares have symmetry every pi/2, so limit to 0 to pi/4
-                    rot = random.uniform(0, np.pi/4 - threshold) 
+                    rot = random.uniform(- 3*np.pi/32 + threshold, 3*np.pi/32 - threshold)
                     # although we provide corner coordinates, the library still might be affected by
                     # the ordering of the corners due to its internal representation
                     # we will see after training if this will improve results

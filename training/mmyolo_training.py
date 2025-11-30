@@ -2,9 +2,6 @@ import os
 import pathlib
 from ultralytics import YOLO
 
-# Image data
-IMAGE_DIR = pathlib.Path(__file__).parent.parent / "output"/"data"/"png"
-
 if __name__ == "__main__":
     # Load a pretrained YOLO model
     model = YOLO('yolo11n-obb.pt')  # Use YOLO11 OBB model
@@ -20,9 +17,9 @@ if __name__ == "__main__":
     results = model.train(
         data=str(data_path),
         task='obb',
-        epochs=180,  # Reduced for testing
+        epochs=10,  # Reduced for testing
         imgsz=640,
-        batch=12,  # Reduced batch size for CPU
+        batch=4,  # Reduced batch size for CPU
         name='yolo_obb_shapes_training'
     )
 

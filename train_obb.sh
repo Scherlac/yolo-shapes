@@ -4,7 +4,7 @@ cd "$(dirname "$0")"
 
 # Clean up previous outputs
 rm -rf output # runs
-rm data.json data.yaml
+rm data.yaml
 
 # Generate dataset
 python generator/generate_syn.py
