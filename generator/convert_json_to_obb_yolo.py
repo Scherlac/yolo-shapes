@@ -58,7 +58,7 @@ for i, image in enumerate(data):
                 rx += x
                 ry += y
                 # Normalize
-                rotated_points.extend([(x+rx) / width, (y+ry) / height])
+                rotated_points.extend([rx/width, ry/height])
                 _array.append([rx/width, ry/height])
             
             # verify the angle with cv2.minAreaRect() as it is used in ultralytics:
