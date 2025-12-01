@@ -2,6 +2,8 @@ import json
 import os
 import pathlib
 import math
+import cv2
+import numpy as np
 
 current_dir = pathlib.Path(__file__).parent
 output_dir = current_dir.parent / "output" / "data"
@@ -47,6 +49,7 @@ for i, image in enumerate(data):
             cos_r = math.cos(rot)
             sin_r = math.sin(rot)
             rotated_points = []
+            _array = []
             for px, py in points:
                 # Rotate
                 rx = px * cos_r - py * sin_r
@@ -55,8 +58,16 @@ for i, image in enumerate(data):
                 rx += x
                 ry += y
                 # Normalize
-                rotated_points.extend([rx / width, ry / height])
+                rotated_points.extend([(x+rx) / width, (y+ry) / height])
+                _array.append([rx/width, ry/height])
             
+            # verify the angle with cv2.minAreaRect() as it is used in ultralytics:
+            # SRC: https://github.com/ultralytics/ultralytics/issues/19428#issuecomment-2898900536
+
+            _xywhr = cv2.minAreaRect(np.array(_array, dtype=np.float32))
+            # debug print statements
+            #print(f"Image {i:04d}, Shape {shape['type']}: GT rot={rot / np.pi *180:.4f}, aspect={w/h:.4f} -> cv2.minAreaRect rot={_xywhr[2]:.4f}, aspect={_xywhr[1][0]/_xywhr[1][1]:.4f}")
+
             # Write line: class x1 y1 x2 y2 x3 y3 x4 y4
             line = f"{cls} {' '.join(f'{p:.6f}' for p in rotated_points)}\n"
             f.write(line)

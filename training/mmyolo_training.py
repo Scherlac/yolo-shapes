@@ -17,15 +17,16 @@ if __name__ == "__main__":
     results = model.train(
         data=str(data_path),
         task='obb',
-        epochs=10,  # Reduced for testing
+        epochs=20,  # Reduced for testing
         imgsz=640,
-        batch=4,  # Reduced batch size for CPU
+        batch=8,  # Reduced batch size for CPU
         name='yolo_obb_shapes_training'
     )
 
     print("Training completed. Model saved in runs/obb/yolo_obb_shapes_training/")
 
     # Optional: Load and test on a sample image
+    IMAGE_DIR = pathlib.Path(__file__).parent.parent / "output" / "data" / "images" / "train"
     sample_image_path = IMAGE_DIR / "image_0000.png"  # Assuming images are named image_0000.png etc.
     if sample_image_path.exists():
         results = model(sample_image_path)

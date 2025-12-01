@@ -131,10 +131,10 @@ def generate_data(num_images=100, # number of images to generate
                 threshold = 0.06
                 if shape_type == 'circle':
                     # circles have rotation symmetry, so set to 0
-                    rot = 0.0
+                    rot = np.pi/2
                 elif shape_type == 'square':
-                    # squares have symmetry every pi/2, so limit to 0 to pi/4
-                    rot = random.uniform(- 3*np.pi/32 + threshold, 3*np.pi/32 - threshold)
+                    # squares have symmetry every pi/2, so limit to '>= 0' to '< pi/4'
+                    rot = random.uniform(np.pi/4 + threshold, np.pi/2)
                     # although we provide corner coordinates, the library still might be affected by
                     # the ordering of the corners due to its internal representation
                     # we will see after training if this will improve results
@@ -142,8 +142,8 @@ def generate_data(num_images=100, # number of images to generate
                     # rectangles and ellipses have every pi rotation symmetry, 
                     # so use full range -pi/4 to pi/4
                     rot = random.uniform(
-                            -np.pi/4 + threshold,
-                            np.pi/4 - threshold
+                            0,
+                            np.pi/2 - threshold
                         )
 
                 shape['rot'] = rot
@@ -232,7 +232,7 @@ def generate_images(data, svg_output_dir='data/svg', png_output_dir='data/png'):
 
 if __name__ == '__main__':
     data = generate_data(
-        num_images=800,
+        num_images=2400,
     )
 
     output_dir = pathlib.Path(__file__).parent.parent / "output"/"data"
