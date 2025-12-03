@@ -43,7 +43,11 @@ for i, image in enumerate(data):
             
             # Compute 4 corner points before rotation (centered at origin)
             hw, hh = w / 2, h / 2
-            points = [(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]
+            if shape['type'] == 'square':
+                # the ultralytics implementation of OBB YOLO is unable to handle squares properly
+                points = [(-hw, -hh), (0, -hh), (0, hh), (-hw, hh)]
+            else:
+                points = [(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]
             
             # Rotate and translate
             cos_r = math.cos(rot)
