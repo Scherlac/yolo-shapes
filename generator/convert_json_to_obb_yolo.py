@@ -25,11 +25,11 @@ def rotate_point(cx, cy, w, h, angle):
         # CCW order, TOP-LEFT starting
         # points = [(-hw, -hh), (-hw, hh), (hw, hh), (hw, -hh)]
         # avoid w == h case see the implementation of regularize_rboxes in ultralytics
-        bias = 0.05
-        hw = hw * (1 + bias)
-        hh = hh * (1 - bias)
+        bias = 0.1
+        hbw = hw # * (1 - bias)
+        hbh = hh # * (1 + bias)
         
-        points = [(hw, hh), (hw, -hh), (-hw, -hh), (-hw, hh)]
+        points = [(hbw, hbh), (hbw, -hbh), (-hbw, -hbh), (-hbw, hbh)]
     else:
         # CW order, TOP-LEFT starting
         points = [(hw, hh), (hw, -hh), (-hw, -hh), (-hw, hh)]
