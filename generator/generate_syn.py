@@ -1,4 +1,4 @@
-# generate synthetic svg data with rectangles and circles for mmyolo training
+# generate synthetic svg data with rectangles and circles for yolo training
 import pathlib
 import random
 import numpy as np
@@ -83,7 +83,7 @@ def generate_data(num_images=100, # number of images to generate
                   ):
 
     """
-    Generate synthetic data for mmyolo training
+    Generate synthetic data for yolo training
     """
 
     data = []
@@ -133,11 +133,9 @@ def generate_data(num_images=100, # number of images to generate
                     # circles have rotation symmetry, so set to 0
                     rot = np.pi/2
                 elif shape_type == 'square':
-                    # squares have symmetry every pi/2, so limit to '>= 0' to '< pi/4'
+                    # squares have symmetry every pi/2, so limit to '>= pi/4' to '< pi/2'
+                    # this gives consistent results with cv2.minAreaRect() used in ultralytics
                     rot = random.uniform(np.pi/4 + threshold, np.pi/2)
-                    # although we provide corner coordinates, the library still might be affected by
-                    # the ordering of the corners due to its internal representation
-                    # we will see after training if this will improve results
                 else:
                     # rectangles and ellipses have every pi rotation symmetry, 
                     # so use full range -pi/4 to pi/4

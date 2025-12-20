@@ -16,4 +16,4 @@ python generator/convert_json_to_obb_yolo.py
 python generator/split_data.py
 
 # Train the model
-python training/mmyolo_training.py
+python training/yolo_training.py

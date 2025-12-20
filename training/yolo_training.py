@@ -22,6 +22,7 @@ if __name__ == "__main__":
         batch=8,  # Reduced batch size for CPU
         name='yolo_obb_shapes_training'
     )
+        # device='0',  # Use 'cpu' if no GPU is available
 
     print("Training completed. Model saved in runs/obb/yolo_obb_shapes_training/")
 

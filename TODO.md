@@ -4,7 +4,7 @@ Based on review of the project content and Ultralytics OBB documentation.
 
 ## Project Summary
 - **Current Setup**: The project generates synthetic data with rotated shapes (rectangles, circles, ellipses) using `generate_syn.py`, which includes rotation (`rot`) values. However, the conversion scripts (`convert_to_coco.py` and `convert_coco_to_yolo.py`) ignore rotation and produce axis-aligned bounding boxes in standard YOLO format (class x_center y_center width height).
-- **Training**: Uses Ultralytics YOLOv5 (`yolov5su.pt`) for axis-aligned object detection. The training script (`mmyolo_training.py`) is basic and loads a pretrained YOLOv5 model.
+- **Training**: Uses Ultralytics YOLOv5 (`yolov5su.pt`) for axis-aligned object detection. The training script (`yolo_training.py`) is basic and loads a pre-trained YOLOv5 model.
 - **Data**: Shapes are stored in `data.json` with position, size, and rotation, but labels are converted to axis-aligned format.
 - **Dependencies**: Includes `ultralytics`, so upgrading to OBB support is feasible.
 
@@ -28,7 +28,7 @@ Based on review of the project content and Ultralytics OBB documentation.
 4. **Update data.yaml**: Ensure it points to the correct paths and includes OBB-specific settings if needed (e.g., for YOLO11 OBB datasets like DOTA).
 
 5. **Update Training Script**:
-   - Change `mmyolo_training.py` to load an OBB model (e.g., `model = YOLO('yolo11n-obb.pt')`).
+   - Change `yolo_training.py` to load an OBB model (e.g., `model = YOLO('yolo11n-obb.pt')`).
    - Use `model.train()` with OBB-compatible arguments (e.g., `task='obb'` if required).
    - Add validation and prediction examples using OBB outputs (e.g., `result.obb.xywhr`).
 

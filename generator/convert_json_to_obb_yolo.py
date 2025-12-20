@@ -4,10 +4,55 @@ import pathlib
 import math
 import cv2
 import numpy as np
+import ultralytics.utils.ops  as ops
 
 current_dir = pathlib.Path(__file__).parent
 output_dir = current_dir.parent / "output" / "data"
 shape_types=['square', 'rect', 'circle', 'ellipse']
+
+
+def rotate_point(cx, cy, w, h, angle):
+    """Rotate rectangle corner points around center (cx, cy) by angle (radians).
+    # angle in radians
+    # Returns list of 8 normalized coordinates [x1, y1, x2, y2, x3, y3, x4, y4]
+    """
+    # Compute 4 corner points before rotation (centered at origin)
+    hw, hh = w / 2, h / 2
+    if shape['type'] == 'square':
+        # the ultralytics implementation of OBB YOLO is unable to handle squares properly
+        # **hack**:  -> in this case the square are recognized correctly also the rotation angle is correct
+        points = [(0, hh), (0, -hh), (-hw, -hh), (-hw, hh)]
+        # CCW order, TOP-LEFT starting
+        # points = [(-hw, -hh), (-hw, hh), (hw, hh), (hw, -hh)]
+    else:
+        # CW order, TOP-LEFT starting
+        points = [(hw, hh), (hw, -hh), (-hw, -hh), (-hw, hh)]
+
+
+    # Rotate and translate
+    cos_r = math.cos(angle)
+    sin_r = math.sin(angle)
+    rotated_points = []
+    _array = []
+    for px, py in points:
+        # Rotate
+        rx = px * cos_r - py * sin_r
+        ry = px * sin_r + py * cos_r
+        # Translate
+        rx += cx
+        ry += cy
+        # Normalize
+        rotated_points.extend([rx/width, ry/height])
+        _array.append([rx/width, ry/height])
+    
+    # verify the angle with cv2.minAreaRect() as it is used in ultralytics:
+    # SRC: https://github.com/ultralytics/ultralytics/issues/19428#issuecomment-2898900536
+
+    _xywhr = cv2.minAreaRect(np.array(_array, dtype=np.float32))
+    # debug print statements
+    print(f"Image {i:04d}, Shape {shape['type']}: GT rot={rot / np.pi *180:.4f}, aspect={w/h:.4f} -> cv2.minAreaRect rot={_xywhr[2]:.4f}, aspect={_xywhr[1][0]/_xywhr[1][1]:.4f}")
+    return rotated_points
+
 
 # Load the data
 with open(output_dir / 'data.json', 'r') as f:
@@ -40,40 +85,27 @@ for i, image in enumerate(data):
             else:
                 continue
             
+            # Get rotated points
+            rotated_points = rotate_point(x, y, w, h, rot)
             
-            # Compute 4 corner points before rotation (centered at origin)
-            hw, hh = w / 2, h / 2
-            if shape['type'] == 'square':
-                # the ultralytics implementation of OBB YOLO is unable to handle squares properly
-                points = [(-hw, -hh), (0, -hh), (0, hh), (-hw, hh)]
-            else:
-                points = [(-hw, -hh), (hw, -hh), (hw, hh), (-hw, hh)]
-            
-            # Rotate and translate
-            cos_r = math.cos(rot)
-            sin_r = math.sin(rot)
-            rotated_points = []
-            _array = []
-            for px, py in points:
-                # Rotate
-                rx = px * cos_r - py * sin_r
-                ry = px * sin_r + py * cos_r
-                # Translate
-                rx += x
-                ry += y
-                # Normalize
-                rotated_points.extend([rx/width, ry/height])
-                _array.append([rx/width, ry/height])
-            
-            # verify the angle with cv2.minAreaRect() as it is used in ultralytics:
-            # SRC: https://github.com/ultralytics/ultralytics/issues/19428#issuecomment-2898900536
+            rotated_points2 = rotated_points
 
-            _xywhr = cv2.minAreaRect(np.array(_array, dtype=np.float32))
-            # debug print statements
-            #print(f"Image {i:04d}, Shape {shape['type']}: GT rot={rot / np.pi *180:.4f}, aspect={w/h:.4f} -> cv2.minAreaRect rot={_xywhr[2]:.4f}, aspect={_xywhr[1][0]/_xywhr[1][1]:.4f}")
+            # using ultralytics utils to ensure correct order of points
+            # rotated_points2 = ops.xywhr2xyxyxyxy(
+            #     np.array([ [
+            #         x / width,
+            #         y / height,
+            #         w / width,
+            #         h / height,
+            #         rot
+            #     ] ] )
+            # ).flatten().tolist()
+
+            # print(f"Image {i:04d}, Shape {shape['type']}: rotated_points={rotated_points}")
+            # print(f"Image {i:04d}, Shape {shape['type']}: rotated_points2={rotated_points2}")
 
             # Write line: class x1 y1 x2 y2 x3 y3 x4 y4
-            line = f"{cls} {' '.join(f'{p:.6f}' for p in rotated_points)}\n"
+            line = f"{cls} {' '.join(f'{p:.6f}' for p in rotated_points2)}\n"
             f.write(line)
 
 print(f"OBB YOLO labels created in {labels_dir}")
