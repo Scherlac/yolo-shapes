@@ -21,9 +21,15 @@ def rotate_point(cx, cy, w, h, angle):
     if shape['type'] == 'square':
         # the ultralytics implementation of OBB YOLO is unable to handle squares properly
         # **hack**:  -> in this case the square are recognized correctly also the rotation angle is correct
-        points = [(0, hh), (0, -hh), (-hw, -hh), (-hw, hh)]
+        # points = [(1.01*hw, 0.99*hh), (1.01*hw, -0.99*hh), (-1.01*hw, -0.99*hh), (-1.01*hw, 0.99*hh)]
         # CCW order, TOP-LEFT starting
         # points = [(-hw, -hh), (-hw, hh), (hw, hh), (hw, -hh)]
+        # avoid w == h case see the implementation of regularize_rboxes in ultralytics
+        bias = 0.05
+        hw = hw * (1 + bias)
+        hh = hh * (1 - bias)
+        
+        points = [(hw, hh), (hw, -hh), (-hw, -hh), (-hw, hh)]
     else:
         # CW order, TOP-LEFT starting
         points = [(hw, hh), (hw, -hh), (-hw, -hh), (-hw, hh)]
