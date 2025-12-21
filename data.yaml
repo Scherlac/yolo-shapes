@@ -1,5 +1,7 @@
 train: output/data/images/train
 val: output/data/images/val
 
-nc: 3
-names: ['rect', 'circle', 'ellipsis']
+nc: 4
+names: ['square', 'rect', 'circle', 'ellipse']
+
+task: obb

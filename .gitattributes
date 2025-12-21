@@ -1,0 +1,40 @@
+
+# git attributes file
+# LFS files
+
+
+## Office documents
+*.doc?      filter=lfs diff=lfs merge=lfs -text
+*.xls?      filter=lfs diff=lfs merge=lfs -text
+*.ppt?      filter=lfs diff=lfs merge=lfs -text
+
+## Other media files
+*.png       filter=lfs diff=lfs merge=lfs -text
+*.jpg       filter=lfs diff=lfs merge=lfs -text
+*.jpeg      filter=lfs diff=lfs merge=lfs -text
+*.ico       filter=lfs diff=lfs merge=lfs -text
+
+## Application & Libraries
+*.lib       filter=lfs diff=lfs merge=lfs -text
+*.dll       filter=lfs diff=lfs merge=lfs -text
+*.exe       filter=lfs diff=lfs merge=lfs -text
+*.so        filter=lfs diff=lfs merge=lfs -text
+
+## Meta files
+*.exp       filter=lfs diff=lfs merge=lfs -text
+*.pdb       filter=lfs diff=lfs merge=lfs -text
+*.suo       filter=lfs diff=lfs merge=lfs -text
+
+## Archives & Installers
+*.zip       filter=lfs diff=lfs merge=lfs -text
+*.rar       filter=lfs diff=lfs merge=lfs -text
+*.tgz       filter=lfs diff=lfs merge=lfs -text
+*.gz        filter=lfs diff=lfs merge=lfs -text
+*.msi       filter=lfs diff=lfs merge=lfs -text
+*.cab       filter=lfs diff=lfs merge=lfs -text
+*.deb       filter=lfs diff=lfs merge=lfs -text
+*.pkl       filter=lfs diff=lfs merge=lfs -text
+*.pt        filter=lfs diff=lfs merge=lfs -text
+
+## Prevent VSCode from auto converting line endings
+* text=auto eol=lf
